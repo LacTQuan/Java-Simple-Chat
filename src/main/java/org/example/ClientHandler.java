@@ -1,14 +1,15 @@
 package org.example;
 
-import java.io.*;
-import java.net.Socket;
 import org.example.observer.Observer;
 
+import java.io.*;
+import java.net.Socket;
+
 public class ClientHandler implements Runnable, Observer {
-    private Server server;
-    private Socket clientSocket;
-    private InputStream inputStream;
-    private OutputStream outputStream;
+    private final Server server;
+    private final Socket clientSocket;
+    private final InputStream inputStream;
+    private final OutputStream outputStream;
     private String username;
 
     public ClientHandler(Server server, Socket clientSocket) throws IOException {
@@ -27,7 +28,6 @@ public class ClientHandler implements Runnable, Observer {
                 String msg = br.readLine();
                 if (msg == null) break;
                 this.username = msg.split(": ")[0];
-//                System.out.println(msg);
                 server.notifyObservers(new Message(msg));
             }
         } catch (Exception e) {
@@ -47,7 +47,6 @@ public class ClientHandler implements Runnable, Observer {
     public void update(Message message) {
         try {
             PrintWriter pw = new PrintWriter(outputStream, true);
-//            System.out.println(message.getUsername() + ": " + message.getMsg());
             pw.println(message.getUsername() + ": " + message.getMsg());
         } catch (Exception e) {
             throw new RuntimeException(e);

@@ -2,8 +2,7 @@ package org.example;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
+import java.awt.event.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,13 +16,23 @@ public class UI extends JFrame {
 
     private List<Message> messages = new ArrayList<>();
     private Client client;
+    Action action = new AbstractAction(){
+        public void actionPerformed(ActionEvent e){
+            String msg = inputField.getText();
+            inputField.setText("");
+            Message message = new Message(username, msg);
+            client.send(message);
+        }
+    };
 
     public UI(String username) {
         super("Chat");
         this.username = username;
         client = new Client(this);
-        setPreferredSize(new Dimension(800, 600));
-        pack();
+
+        Dimension screensize = Toolkit.getDefaultToolkit().getScreenSize();
+        this.setSize(screensize.width / 2, screensize.height / 2);
+
         addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
@@ -33,10 +42,11 @@ public class UI extends JFrame {
                 dispose();
             }
         });
-//        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setLocationRelativeTo(null);
         setLayout(new GridBagLayout());
 
         initComponents();
+        EventQueue.invokeLater(() -> inputField.requestFocusInWindow());
 
         setVisible(true);
     }
@@ -54,6 +64,9 @@ public class UI extends JFrame {
 
         inputBox.setLayout(new BorderLayout());
         inputBox.add(inputField, BorderLayout.CENTER);
+        inputField.addActionListener(action);
+        inputField.requestFocus();
+
         inputBox.add(sendButton, BorderLayout.EAST);
 
         // Join the chat room message
@@ -88,6 +101,7 @@ public class UI extends JFrame {
 
         for (Message message : messages) {
             msgTextArea.append(message.getUsername() + ": " + message.getMsg() + "\n");
+            msgTextArea.setForeground(Color.BLACK);
         }
     }
 

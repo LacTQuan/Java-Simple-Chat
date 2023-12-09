@@ -3,7 +3,7 @@ package org.example;
 import org.example.observer.Observer;
 import org.example.observer.Subject;
 
-import java.io.*;
+import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -14,10 +14,10 @@ import java.util.List;
 public class Server implements Subject {
     private ServerSocket serverSocket;
     private List<Observer> clients;
-    private int port = 1234;
 
     public Server() {
         try {
+            int port = 1234;
             serverSocket = new ServerSocket(port);
             clients = Collections.synchronizedList(new ArrayList<>());
             System.out.println("Server is running on port " + port);
@@ -26,6 +26,10 @@ public class Server implements Subject {
             System.out.println("Cannot open socket." + ie);
             System.exit(1);
         }
+    }
+
+    public static void main(String[] args) {
+        new Server();
     }
 
     public void start() {
@@ -71,10 +75,6 @@ public class Server implements Subject {
                 o.update(message);
             }
         }
-    }
-
-    public static void main(String[] args) {
-        new Server();
     }
 }
 

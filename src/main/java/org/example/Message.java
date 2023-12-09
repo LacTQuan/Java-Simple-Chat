@@ -3,6 +3,7 @@ package org.example;
 public class Message {
     private String username;
     private String msg;
+
     public Message(String username, String msg) {
         this.username = username;
         this.msg = msg;
@@ -13,7 +14,8 @@ public class Message {
         this.msg = message.split(": ")[1];
     }
 
-    public Message() {}
+    public Message() {
+    }
 
     public String getUsername() {
         return username;
