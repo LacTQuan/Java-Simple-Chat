@@ -1,14 +1,19 @@
 package org.example;
 
-public class ChatMsg {
+public class Message {
     private String username;
     private String msg;
-    public ChatMsg(String username, String msg) {
+    public Message(String username, String msg) {
         this.username = username;
         this.msg = msg;
     }
 
-    public ChatMsg() {}
+    public Message(String message) {
+        this.username = message.split(": ")[0];
+        this.msg = message.split(": ")[1];
+    }
+
+    public Message() {}
 
     public String getUsername() {
         return username;

@@ -1,6 +1,5 @@
 package org.example;
 
-/* CLIENT */
 import java.io.*;
 import java.net.*;
 
@@ -8,18 +7,24 @@ public class Client {
 
     private Socket socket;
     private int port = 1234;
+    private UI ui;
+    private Thread receiveThread;
 
-    public Client() {
+    public Client() {}
+
+    public Client(UI ui) {
+        this.ui = ui;
         try {
             socket = new Socket(InetAddress.getLocalHost(), port);
             System.out.println("Client socket is created " + socket);
-            receive();
+            receiveThread = new Thread(new Receive());
+            receiveThread.start();
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    public void send(ChatMsg msg) {
+    public void send(Message msg) {
         try {
             OutputStream clientOut = socket.getOutputStream();
             PrintWriter pw = new PrintWriter(clientOut, true);
@@ -29,81 +34,32 @@ public class Client {
         }
     }
 
-    public void receive() {
-        new Thread(() -> {
+    private class Receive implements Runnable  {
+        @Override
+        public void run() {
             while (true) {
                 try {
+                    if (socket.isClosed()) break;
                     InputStream clientIn = socket.getInputStream();
                     BufferedReader br = new BufferedReader(new InputStreamReader(clientIn));
                     String msg = br.readLine();
-                    System.out.println(msg);
+//                    System.out.println(msg);
+                    Message message = new Message(msg.split(": ")[0], msg.split(": ")[1]);
+                    ui.addChatMsg(message);
+                    ui.displayChatMsgs();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
             }
-        }).start();
+        }
     }
 
     public void close() {
         try {
+            receiveThread.interrupt();
             socket.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
-//    public static void main(String args[]) {
-//
-//        Socket client = null;
-//
-//        // Default port number we are going to use
-//        int portnumber = 1234;
-//        if (args.length >= 1){
-//            portnumber = Integer.parseInt(args[0]);
-//        }
-//
-//        for (int i=0; i <10; i++) {
-//            try {
-//                String msg = "";
-//
-//                // Create a client socket
-//                client = new Socket(InetAddress.getLocalHost(), portnumber);
-//                System.out.println("Client socket is created " + client);
-//
-//                // Create an output stream of the client socket
-//                OutputStream clientOut = client.getOutputStream();
-//                PrintWriter pw = new PrintWriter(clientOut, true);
-//
-//                // Create an input stream of the client socket
-//                InputStream clientIn = client.getInputStream();
-//                BufferedReader br = new BufferedReader(new
-//                        InputStreamReader(clientIn));
-//
-//                // Create BufferedReader for a standard input
-//                BufferedReader stdIn = new BufferedReader(new
-//                        InputStreamReader(System.in));
-//
-//                System.out.println("Enter your name. Type Bye to exit. ");
-//
-//                // Read data from standard input device and write it
-//                // to the output stream of the client socket.
-//                msg = stdIn.readLine().trim();
-//                pw.println(msg);
-//
-//                // Read data from the input stream of the client socket.
-//                System.out.println("Message returned from the server = " + br.readLine());
-//
-//                pw.close();
-//                br.close();
-//                client.close();
-//
-//                // Stop the operation
-//                if (msg.equalsIgnoreCase("Bye")) {
-//                    break;
-//                }
-//
-//            } catch (IOException ie) {
-//                System.out.println("I/O error " + ie);
-//            }
-//        }
-//    }
 }

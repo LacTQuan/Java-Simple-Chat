@@ -2,65 +2,68 @@ package org.example;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 import java.util.List;
 
 public class UI extends JFrame {
     private JPanel msgBox;
-    private JTextArea msgTextArea;  // Changed from JTextField to JTextArea
+    private JTextArea msgTextArea;
     private JPanel inputBox;
     private JTextField inputField;
     private JButton sendButton;
-    private JTextArea username;
+    private String username;
 
-    private List<ChatMsg> chatMsgs = new ArrayList<>();
+    private List<Message> messages = new ArrayList<>();
     private Client client;
 
-    public UI() {
+    public UI(String username) {
         super("Chat");
-        client = new Client();
+        this.username = username;
+        client = new Client(this);
         setPreferredSize(new Dimension(800, 600));
         pack();
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                client.send(new Message(username, "has left the chat room."));
+                System.out.println("Client disconnected: " + username);
+                client.close();
+                dispose();
+            }
+        });
+//        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(new GridBagLayout());
 
-        UsernameScreen();
         initComponents();
 
-        // Make the frame visible after adding components
         setVisible(true);
     }
 
-    public void UsernameScreen() {
-        setPreferredSize(new Dimension(400, 200));
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        username = new JTextArea();
-
-        setLocationRelativeTo(null); // Center the frame on the screen
-        setVisible(true);
-    }
 
     public void initComponents() {
         msgBox = new JPanel();
-        msgTextArea = new JTextArea();  // Changed from JTextField to JTextArea
+        msgTextArea = new JTextArea();
         inputBox = new JPanel();
         inputField = new JTextField();
-        sendButton = new JButton("Send");  // Set the button text in the constructor
+        sendButton = new JButton("Send");
 
         msgBox.setLayout(new BorderLayout());
-        msgBox.add(new JScrollPane(msgTextArea), BorderLayout.CENTER);  // Use JScrollPane for the text area
+        msgBox.add(new JScrollPane(msgTextArea), BorderLayout.CENTER);
 
         inputBox.setLayout(new BorderLayout());
         inputBox.add(inputField, BorderLayout.CENTER);
         inputBox.add(sendButton, BorderLayout.EAST);
 
+        // Join the chat room message
+        client.send(new Message(username, "has joined the chat room."));
+
         sendButton.addActionListener(e -> {
             String msg = inputField.getText();
             inputField.setText("");
-            ChatMsg chatMsg = new ChatMsg(UserProfile.getUserProfile(), msg);
-            client.send(chatMsg);
-            addChatMsg(chatMsg);
-            displayChatMsgs();
+            Message message = new Message(username, msg);
+            client.send(message);
         });
 
         GridBagConstraints gbc = new GridBagConstraints();
@@ -81,19 +84,15 @@ public class UI extends JFrame {
     }
 
     public void displayChatMsgs() {
-        // Clear the text area before adding messages
         msgTextArea.setText("");
 
-        for (ChatMsg chatMsg : chatMsgs) {
-            msgTextArea.append(chatMsg.getUsername() + ": " + chatMsg.getMsg() + "\n");
+        for (Message message : messages) {
+            msgTextArea.append(message.getUsername() + ": " + message.getMsg() + "\n");
         }
     }
 
-    public void addChatMsg(ChatMsg chatMsg) {
-        chatMsgs.add(chatMsg);
+    public void addChatMsg(Message message) {
+        messages.add(message);
     }
 
-    public static void main(String[] arg){
-        SwingUtilities.invokeLater(() -> new UI());
-    }
 }

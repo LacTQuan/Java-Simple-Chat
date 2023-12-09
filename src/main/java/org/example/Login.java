@@ -7,6 +7,7 @@ import java.awt.event.ActionListener;
 
 public class Login extends JFrame {
     private JTextField usernameField;
+    private String username;
 
     public Login() {
         super("Login Screen");
@@ -15,7 +16,7 @@ public class Login extends JFrame {
         initComponents();
 
         pack();
-        setLocationRelativeTo(null); // Center the frame on the screen
+        setLocationRelativeTo(null);
         setVisible(true);
     }
 
@@ -44,10 +45,10 @@ public class Login extends JFrame {
         loginButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String username = usernameField.getText();
+                username = usernameField.getText();
                 if (!username.isEmpty()) {
-                    dispose(); // Close the login screen
-                    new UI();
+                    dispose();
+                    new UI(username);
                 } else {
                     JOptionPane.showMessageDialog(Login.this, "Please enter your name.");
                 }
@@ -58,7 +59,7 @@ public class Login extends JFrame {
         add(panel, BorderLayout.CENTER);
     }
 
-//    private void openMainScreen(String username) {
-//        SwingUtilities.invokeLater(() -> new UI());
-//    }
+    public String getUsername() {
+        return username;
+    }
 }
