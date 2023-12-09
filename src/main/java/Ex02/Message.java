@@ -1,4 +1,4 @@
-package org.example;
+package Ex02;
 
 public class Message {
     private String username;

@@ -1,4 +1,4 @@
-package org.example;
+package Ex02;
 
 import java.io.*;
 import java.net.InetAddress;

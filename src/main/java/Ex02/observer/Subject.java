@@ -1,6 +1,6 @@
-package org.example.observer;
+package Ex02.observer;
 
-import org.example.Message;
+import Ex02.Message;
 
 public interface Subject {
     void addObserver(Observer observer);

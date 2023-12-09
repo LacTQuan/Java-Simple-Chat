@@ -1,4 +1,4 @@
-package org.example;
+package Ex02;
 
 import javax.swing.*;
 

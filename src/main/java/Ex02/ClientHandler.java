@@ -1,6 +1,6 @@
-package org.example;
+package Ex02;
 
-import org.example.observer.Observer;
+import Ex02.observer.Observer;
 
 import java.io.*;
 import java.net.Socket;

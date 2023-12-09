@@ -1,7 +1,7 @@
-package org.example;
+package Ex02;
 
-import org.example.observer.Observer;
-import org.example.observer.Subject;
+import Ex02.observer.Subject;
+import Ex02.observer.Observer;
 
 import java.io.IOException;
 import java.net.ServerSocket;
